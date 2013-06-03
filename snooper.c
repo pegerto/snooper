@@ -1,13 +1,20 @@
 #include <stdio.h>
 #include <pcap.h>
 #include <signal.h>
+#include "core/cb_pkg_buffer.h"
 
-static int interruptCapture = 0;
+static pcap_t *handle;
 
 void 
 intCaptureHandler(int dummy)
 {
-	interruptCapture = 1;
+	pcap_breakloop(handle) ;
+}
+
+void 
+packet_handler(u_char *user, const struct pcap_pkthdr *header, const u_char *pkt_data)
+{
+	printf("pk\n ");
 }
 
 int
@@ -15,10 +22,7 @@ main(int argc, char *argv[])
 {
 	char *dev;
 	char errbuf[PCAP_ERRBUF_SIZE];
-	pcap_t *handle;
 
-	struct pcap_pkthdr	header;						/* Header provide by pcap*/
-	const u_char *packet;							/* The actual package */
 
 	// Looking for a default device.
 	dev = pcap_lookupdev(errbuf);
@@ -33,30 +37,21 @@ main(int argc, char *argv[])
 		printf("Using device: %s\n", dev);
 	}
 
+
 	//Starting  the traffic capture, using a handle
 	handle  = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
 	if (handle == NULL)
 	{
-			fprintf(stderr, "Couldn't open the device %n, are you Su\n", dev);
+			fprintf(stderr, "Couldn't open the device %s, are you Su\n", dev);
 			return(2);
 	}
 
 	//Capture interruption
 	signal(SIGINT, intCaptureHandler);
 	
-	//Grab a package
-	while(!interruptCapture){
-		packet = pcap_next(handle, &header);
-		if(packet == NULL)
-		{
-			fprintf(stderr, "No packet captured\n");
-		}
-		else
-		{
-			printf("We have a packet of [%d]\n", header.len);
-		}
-	}
 
+	//Capture loop
+	pcap_loop(handle,0, packet_handler, NULL);
 
 	pcap_close(handle);
 	return(0);
