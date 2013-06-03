@@ -1,5 +1,14 @@
 #include <stdio.h>
 #include <pcap.h>
+#include <signal.h>
+
+static int interruptCapture = 0;
+
+void 
+intCaptureHandler(int dummy)
+{
+	interruptCapture = 1;
+}
 
 int
 main(int argc, char *argv[]) 
@@ -32,10 +41,21 @@ main(int argc, char *argv[])
 			return(2);
 	}
 
+	//Capture interruption
+	signal(SIGINT, intCaptureHandler);
+	
 	//Grab a package
-	packet = pcap_next(handle, &header);
-	printf("We have a packet of [%d]\n", header.len);
-
+	while(!interruptCapture){
+		packet = pcap_next(handle, &header);
+		if(packet == NULL)
+		{
+			fprintf(stderr, "No packet captured\n");
+		}
+		else
+		{
+			printf("We have a packet of [%d]\n", header.len);
+		}
+	}
 
 
 	pcap_close(handle);
