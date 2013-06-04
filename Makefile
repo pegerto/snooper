@@ -1,4 +1,4 @@
-#Snooper
+#Snooper make
 CC=gcc
 
 CFLAGS=-c -Wall

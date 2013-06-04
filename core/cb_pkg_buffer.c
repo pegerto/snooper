@@ -1,10 +1,30 @@
+/*
+
+    Copyright 2013 Pegerto Fernandez <pegerto@gmail.com>
+
+    This file is part of Snooper
+
+    Snooper is free software: you can redistribute it and/or modify it under the 
+    terms of the GNU General Public License as published by the 
+    Free Software Foundation, either version 3 of the License, or (at your option)
+    any later version.
+    
+    Snooper is distributed in the hope that it will be useful, but 
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+    details.
+
+    You should have received a copy of the GNU General Public License along 
+    with Snooper. If not, see http://www.gnu.org/licenses/.
+*/
+    
 #include "cb_pkg_buffer.h"
 
 
 cb_pkg_buffer *
 cb_pkg_init(size_t capacity)
 {
-	//space for the cb_pkg buffer
+	//Space for the cb_pkg buffer
 	cb_pkg_buffer *cb_pkg = malloc ( sizeof(cb_pkg_buffer));
 	if (cb_pkg == NULL)
 	{
@@ -50,7 +70,7 @@ cb_pkg_push(cb_pkg_buffer *cb_pkg, const struct pcap_pkthdr *header,
 	{
 		//Increase header buffer size/2
 		new_capacity = cb_pkg->capacity + ( cb_pkg-> capacity / 2);
-		// allocate copy and remove
+		//Allocate copy and remove
 		new_header_buffer = malloc (new_capacity * sz);
 		if (new_header_buffer == NULL)
 		{
