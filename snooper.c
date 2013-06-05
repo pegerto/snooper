@@ -84,10 +84,21 @@ main(int argc, char *argv[])
 	//Capture interruption
 	signal(SIGINT, intCaptureHandler);
 	
-
 	//Capture loop
 	pcap_loop(handle,0, packet_handler, NULL);
-
 	pcap_close(handle);
+	
+
+	//List the buffer
+	struct pcap_pkthdr *h;
+	h = malloc(sizeof(struct pcap_pkthdr));
+	printf("List the buffer\n");
+	while(cb_pkg_pull(cb_pkg, h, NULL))
+	{
+		printf("b pk %d\n", h->len);
+	}
+
+
+
 	return(0);
 }
