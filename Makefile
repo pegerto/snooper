@@ -6,6 +6,9 @@ CLIBS=-lpcap
 
 all: snooper
 
+debug: CC += -DDEBUG -g
+debug: snooper
+
 snooper: snooper.o 
 	$(CC) $(CLIBS) snooper.o cb_pkg_buffer.o -o snooper
 
