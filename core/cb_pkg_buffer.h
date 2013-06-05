@@ -50,3 +50,11 @@ cb_pkg_init(size_t capacity);
 void 
 cb_pkg_push(cb_pkg_buffer *cb_pkg, const struct pcap_pkthdr *header, 
 			const u_char *pkt_data);
+
+
+/**
+* Pull a package and the pcap header from the ring buffer.
+*/
+int 
+cb_pkg_pull(cb_pkg_buffer *cb_pkg, struct pcap_pkthdr *header,
+			u_char *pkt_data);

@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License along 
     with Snooper. If not, see http://www.gnu.org/licenses/.
 */
-    
+
 #include "cb_pkg_buffer.h"
 
 
@@ -86,7 +86,7 @@ cb_pkg_push(cb_pkg_buffer *cb_pkg, const struct pcap_pkthdr *header,
 		//Release old buffer
 		free(cb_pkg->header_buffer);
 
-		//Update the inforamation
+		//Update  buffer and capacity
 		cb_pkg->header_buffer = new_header_buffer;
 		cb_pkg->capacity = new_capacity;
 
@@ -103,4 +103,35 @@ cb_pkg_push(cb_pkg_buffer *cb_pkg, const struct pcap_pkthdr *header,
 		cb_pkg->h_head = cb_pkg->header_buffer;
 
 	cb_pkg->count++;
+}
+
+int  
+cb_pkg_pull(cb_pkg_buffer *cb_pkg,  struct pcap_pkthdr *header,
+			u_char *pkt_data)
+{
+	size_t sz = sizeof(struct pcap_pkthdr);
+
+	//Control the buffer structure
+	if (cb_pkg == NULL)
+	{
+		fprintf(stderr, "Error: Package buffer is not started\n" );
+		exit(2);
+	}
+
+	//Do we have elements in the buffer
+	if (cb_pkg->count == 0 )
+		return 0;
+	
+	//Copy the item from the buffer
+	memcpy(header, cb_pkg->h_tail , sz);
+
+	//TODO: Decrease ring buffer size
+
+	//In the last position goes to the the head
+	cb_pkg->h_tail = cb_pkg->h_tail + sz; 
+	if (cb_pkg->h_tail == (cb_pkg->capacity * sz + cb_pkg->header_buffer))
+		cb_pkg->h_tail = cb_pkg->header_buffer;
+
+	cb_pkg->count--;
+	return 1;
 }
